@@ -4,7 +4,16 @@ import axios from "axios";
 
 export default function Recipe() {
     const [Products, setproducts] = useState([]);
+    const[recipebtn, setRecipebtn] = useState(null);
 
+
+        const getRecipeInst = (Product)=>{
+            setRecipebtn(Product);
+        }
+
+        const handleCloseModal = ()=>{
+            setRecipebtn(null);
+        }
     useEffect(() => {
       axios.get("https://dummyjson.com/recipes")
         .then((response) => {
@@ -12,7 +21,8 @@ export default function Recipe() {
           setproducts(response.data.recipes); // Adjust this based on the response structure
         })
         .catch((error) => console.error("error in fetching"));
-    });
+    },[]);
+
     return (
   <>
   <div style={{backgroundColor:'black', textDecoration:'none'}}>
@@ -30,13 +40,44 @@ export default function Recipe() {
                   <div className="card-title">
                     Prep Time: {Product.prepTimeMinutes} minutes
                   </div>
-                  <button className='btn-primary btn-outline-danger' style={{borderRadius:'4px', color:'white'}}>Get Recipie</button>
+                  <button className='btn-primary btn-outline-danger' style={{borderRadius:'4px', color:'white'}} onClick={()=>getRecipeInst(Product)}>Get Recipie</button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-  </>
-    )
+
+      {/* used modal here */}
+      { recipebtn &&
+        <div
+        className="modal show d-block"
+        tabIndex="-1"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" style={{ color: "orangered" }}>
+                {recipebtn.name}
+              </h5>
+            </div>
+            <div className="modal-body">
+              <p>{recipebtn.instructions}</p>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+}
+</>
+)
 }
