@@ -1,10 +1,12 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from "axios";
+import {Heart} from 'lucide-react';
 
 export default function Recipe() {
     const [Products, setproducts] = useState([]);
     const[recipebtn, setRecipebtn] = useState(null);
+    const[liked, setLiked] = useState({});
 
 
         const getRecipeInst = (Product)=>{
@@ -13,6 +15,12 @@ export default function Recipe() {
 
         const handleCloseModal = ()=>{
             setRecipebtn(null);
+        }
+        const toggleLike = (id) => {
+          setLiked((prevLiked) => ({
+              ...prevLiked,
+              [id]: !prevLiked[id] // Toggle only the clicked card's like status
+          }));
         }
     useEffect(() => {
       axios.get("https://dummyjson.com/recipes")
@@ -27,11 +35,13 @@ export default function Recipe() {
   <>
   <div style={{backgroundColor:'black', textDecoration:'none'}}>
         <h3 className='text-center' style={{padding:'10px',color:'orangered', marginBottom:'10px' }}>Recipies Details</h3>
-        <div className="row" style={{margin:'10px', padding:'20px' }}>
+        <div className="container-fluid row" style={{margin:'10px', padding:'20px' }}>
           {Products.map((Product) => (
-            <div className="col-md-4 " key={Product.id}>
-              <div className="card d-flex h-100 flex-column bg-light" style={{color:'orangered',border: '2px solid orangered', borderRadius:'2px solid orangered'}}>
-                <div className="card-body ">
+            <div className="col-md-4 " key={Product.id} style={{ marginBottom: "20px" }}>
+              {/*When rendering a list using .map(), React requires each child element to have a unique key to efficiently track and update 
+              components. Without it, React may not update the UI properly and will show a warning in the console.*/}
+              <div className="card d-flex h-100 flex-column bg-light" style={{color:'orangered',border: '2px solid orangered', borderRadius:'5px solid orangered'}}>
+                <div className="card-body d-flex flex-column flex-grow-1">
                 <img src={Product.image} alt={Product.name} className="card-img-top" style={{ width: "100%", height: "200px", objectFit: "cover" }} />
                   <div className="card-title">{Product.name}</div>
                   <div className="card-title"> Ingridients: <br />
@@ -40,10 +50,17 @@ export default function Recipe() {
                   <div className="card-title">
                     Prep Time: {Product.prepTimeMinutes} minutes
                   </div>
+                  <div className="card-footer mt-auto d-flex justify-content-between">
                   <button className='btn-primary btn-outline-danger' style={{borderRadius:'4px', color:'white'}} onClick={()=>getRecipeInst(Product)}>Get Recipie</button>
+                  <button onClick={()=>{toggleLike(Product.id)}} style={{border:'none', marginRight:'0'}}>
+                  {
+                      liked [Product.id] ? <Heart color='orangered' fill='orangered'/> : <Heart/>
+                  }
+                  </button>
+                  </div>
+                </div>
                 </div>
               </div>
-            </div>
           ))}
         </div>
       </div>
